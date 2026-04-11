@@ -41,6 +41,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const revokeBtn = document.getElementById('revokeBtn');
+  const revokeInput = document.getElementById('revokeInput');
+
+  revokeBtn.addEventListener('click', async () => {
+    const voucherId = revokeInput.value.trim();
+    if (!voucherId) {
+      alert('Please enter a voucher ID');
+      return;
+    }
+
+    try {
+      revokeBtn.disabled = true;
+      revokeBtn.textContent = 'Revoking...';
+      
+      const result = await ApiService.revokeVoucher(voucherId);
+      
+      if (result.success) {
+        alert('SUCCESS: ' + result.message);
+        revokeInput.value = '';
+        fetchTransactions(); // Refresh the table
+      } else {
+        alert('ERROR: ' + result.message);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Network error communicating with the API.');
+    } finally {
+      revokeBtn.disabled = false;
+      revokeBtn.textContent = 'Revoke';
+    }
+  });
+
   const txTableBody = document.getElementById('txTableBody');
   
   async function fetchTransactions() {

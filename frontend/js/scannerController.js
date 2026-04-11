@@ -55,6 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (res.status === 'REDEEMED') {
         setStatus('redeemed', 'Already Redeemed', 'This voucher has previously been claimed.');
         scanAgainBtn.style.display = 'block';
+      } else if (res.status === 'REVOKED') {
+        setStatus('revoked', 'Voucher Revoked', 'This voucher has been invalidated by an administrator.');
+        scanAgainBtn.style.display = 'block';
       } else {
         setStatus('invalid', 'Invalid Voucher', res.message);
         scanAgainBtn.style.display = 'block';
