@@ -1,106 +1,149 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const issueBtn = document.getElementById('issueBtn');
-  const qrWrapper = document.getElementById('qrWrapper');
-  const qrcodeDiv = document.getElementById('qrcode');
-  const voucherIdDisplay = document.getElementById('voucherIdDisplay');
+/**
+ * AdminController — Manages the Sponsor (Admin) view logic.
+ */
+const AdminController = (() => {
+  let pollingInterval = null;
+  let initialized = false;
 
-  issueBtn.addEventListener('click', async () => {
-    try {
-      issueBtn.disabled = true;
-      issueBtn.textContent = 'Generating...';
-      
-      // Hides existing QR cleanly to swap with new
-      qrWrapper.style.display = 'none';
-      qrcodeDiv.innerHTML = '';
+  function initAdmin() {
+    if (initialized) return;
+    initialized = true;
 
-      const result = await ApiService.issueVoucher(10);
-      
-      if (result.success) {
-        const voucherId = result.voucher.voucher_id;
-        
-        new QRCode(qrcodeDiv, {
-          text: voucherId,
-          width: 256,
-          height: 256,
-          colorDark : "#0f172a",
-          colorLight : "#ffffff",
-          correctLevel : QRCode.CorrectLevel.H
-        });
+    const issueBtn = document.getElementById('issueBtn');
 
-        voucherIdDisplay.textContent = `${voucherId}`;
-        qrWrapper.style.display = 'flex';
-      } else {
-        alert('Failed to issue voucher: ' + result.message);
+    issueBtn.addEventListener('click', async () => {
+      try {
+        issueBtn.disabled = true;
+        issueBtn.textContent = 'Generating...';
+
+        const result = await ApiService.issueVoucher(10);
+
+        if (result.success) {
+          // Delegate entirely to the unified voucher card engine
+          AppController.renderVoucherPreview(result.voucher.voucher_id, 10);
+        } else {
+          alert('Failed to issue voucher: ' + result.message);
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Network error communicating with the API.');
+      } finally {
+        issueBtn.disabled = false;
+        issueBtn.textContent = 'Generate Voucher (10 DASH)';
       }
-    } catch (error) {
-      console.error(error);
-      alert('Network error communicating with the API.');
-    } finally {
-      issueBtn.disabled = false;
-      issueBtn.textContent = 'Generate New QR';
-    }
-  });
+    });
 
-  const revokeBtn = document.getElementById('revokeBtn');
-  const revokeInput = document.getElementById('revokeInput');
+    const revokeBtn = document.getElementById('revokeBtn');
+    const revokeInput = document.getElementById('revokeInput');
 
-  revokeBtn.addEventListener('click', async () => {
-    const voucherId = revokeInput.value.trim();
-    if (!voucherId) {
-      alert('Please enter a voucher ID');
-      return;
-    }
-
-    try {
-      revokeBtn.disabled = true;
-      revokeBtn.textContent = 'Revoking...';
-      
-      const result = await ApiService.revokeVoucher(voucherId);
-      
-      if (result.success) {
-        alert('SUCCESS: ' + result.message);
-        revokeInput.value = '';
-        fetchTransactions(); // Refresh the table
-      } else {
-        alert('ERROR: ' + result.message);
+    revokeBtn.addEventListener('click', async () => {
+      const voucherId = revokeInput.value.trim();
+      if (!voucherId) {
+        alert('Please enter a voucher ID');
+        return;
       }
-    } catch (error) {
-      console.error(error);
-      alert('Network error communicating with the API.');
-    } finally {
-      revokeBtn.disabled = false;
-      revokeBtn.textContent = 'Revoke';
-    }
-  });
 
-  const txTableBody = document.getElementById('txTableBody');
-  
+      try {
+        revokeBtn.disabled = true;
+        revokeBtn.textContent = 'Revoking...';
+
+        const result = await ApiService.revokeVoucher(voucherId);
+
+        if (result.success) {
+          AppController.showToast('Voucher revoked successfully', 'info');
+          revokeInput.value = '';
+          fetchTransactions();
+        } else {
+          alert('ERROR: ' + result.message);
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Network error communicating with the API.');
+      } finally {
+        revokeBtn.disabled = false;
+        revokeBtn.textContent = 'Revoke';
+      }
+    });
+
+    // Start polling
+    fetchTransactions();
+    pollingInterval = setInterval(fetchTransactions, 3000);
+  }
+
   async function fetchTransactions() {
+    const txTableBody = document.getElementById('txTableBody');
+    if (!txTableBody) return;
+
     try {
       const txs = await ApiService.getTransactions();
       txTableBody.innerHTML = '';
-      
+
       txs.forEach(tx => {
         const tr = document.createElement('tr');
-        
-        const shortVoucherId = tx.voucher_id.split('-')[0] + '...';
+
+        // Requirement 6: Display FULL voucher_id
+        const voucherId = tx.voucher_id;
         const shortTxId = tx.tx_id ? tx.tx_id : '-';
         const timeStr = new Date(tx.timestamp).toLocaleTimeString();
-        
+
         tr.innerHTML = `
-          <td class="monospace">${shortVoucherId}</td>
+          <td class="monospace">
+            ${voucherId}
+            <button class="copy-btn" data-id="${voucherId}" title="Copy ID">
+              <svg class="copy-btn__icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+          </td>
           <td><span class="status-pill ${tx.status}">${tx.status}</span></td>
           <td class="monospace">${shortTxId}</td>
           <td>${timeStr}</td>
+          <td>
+            <button class="action-preview" data-id="${voucherId}" data-amount="10">Preview</button>
+          </td>
         `;
+
+        // Bind copy button — dual-path for desktop + mobile compatibility
+        const copyBtn = tr.querySelector('.copy-btn');
+        copyBtn.addEventListener('click', async () => {
+          const originalContent = copyBtn.innerHTML;
+
+          const success = await copyToClipboard(voucherId);
+
+          if (success) {
+            copyBtn.textContent = 'Copied!';
+            copyBtn.classList.add('copied');
+            copyBtn.disabled = true;
+
+            setTimeout(() => {
+              copyBtn.innerHTML = originalContent;
+              copyBtn.classList.remove('copied');
+              copyBtn.disabled = false;
+            }, 1500);
+
+            AppController.showToast('Voucher ID copied!', 'success');
+          } else {
+            AppController.showToast('Copy failed — please copy manually.', 'error');
+          }
+        });
+
+        // Bind preview button (Requirement 8)
+        tr.querySelector('.action-preview').addEventListener('click', () => {
+          AppController.openVoucherModal(voucherId, 10);
+        });
+
         txTableBody.appendChild(tr);
       });
-    } catch(e) {
+    } catch (e) {
       console.error('Failed to fetch transactions', e);
     }
   }
 
-  // Fetch immediately and poll every 2 seconds
-  fetchTransactions();
-  setInterval(fetchTransactions, 2000);
-});
+  function destroyAdmin() {
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+      pollingInterval = null;
+    }
+    initialized = false;
+  }
+
+  return { initAdmin, destroyAdmin, fetchTransactions };
+})();

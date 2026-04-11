@@ -1,9 +1,10 @@
 /**
  * server.js — Application entry point.
- * 
- * Initializes the Dash Platform connection (if enabled),
- * then starts the Express HTTP server.
+ *
+ * Loads environment variables, initialises the Dash Platform connection
+ * (if enabled), then starts the Express HTTP server on port 3000.
  */
+require('dotenv').config(); // Must be first — loads .env before any other module reads process.env
 const dashClient = require('./config/dashClient');
 const app = require('./app');
 
