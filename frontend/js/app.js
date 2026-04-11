@@ -79,7 +79,7 @@ const AppController = (() => {
     el('merchant-view').style.display = 'none';
     el('sponsor-view').classList.add('view--active');
     AdminController.initAdmin();
-    document.title = 'Admin Station — Dash Voucher';
+    document.title = 'Sure Vouch — Admin Station';
   }
 
   function showMerchantView() {
@@ -90,7 +90,7 @@ const AppController = (() => {
     el('merchant-view').classList.add('view--active');
     if (el('merchantLabel')) el('merchantLabel').textContent = `Merchant: ${currentRole.name}`;
     ScannerController.initScanner();
-    document.title = 'Merchant Station — Dash Voucher';
+    document.title = 'Sure Vouch — Merchant Scanner';
   }
 
   /* ───── Tab Navigation ───── */
@@ -113,8 +113,12 @@ const AppController = (() => {
     // Build internal HTML structure
     container.innerHTML = `
       <div class="voucher-card voucher-card--visible" style="display: flex;">
-        <div class="voucher-card__header">
-          <img src="assets/dash_logo.png" alt="Dash" class="voucher-card__logo">
+        <div class="voucher-card__header" style="justify-content: space-between; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <img src="assets/surevouch_logo.png" alt="Sure Vouch" class="voucher-card__logo" style="filter: none;">
+            <span style="font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.1rem; color: #fff;">Sure Vouch</span>
+          </div>
+          <span style="font-size: 0.65rem; color: rgba(255,255,255,0.4); font-weight: 700; text-transform: uppercase;">Powered by Dash</span>
         </div>
         <div class="voucher-card__body">
           <div class="voucher-card__info">

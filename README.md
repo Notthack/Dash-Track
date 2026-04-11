@@ -1,8 +1,8 @@
-# 🛡️ Dash Trust-Verified Payments
+# 🛡️ Sure Vouch
 
-### Premium Conditional Voucher System on Dash Platform
+### Premium Conditional Voucher System — Powered by Dash Platform
 
-A sophisticated, role-based application built for the **NottsHack 2026** competition. This project demonstrates trust-verified conditional payments using Dash Platform's decentralized data storage (Drive) and identity systems.
+A sophisticated, role-based application built for the **NottsHack 2026** competition. **Sure Vouch** demonstrates trust-verified conditional payments using Dash Platform's decentralized data storage (Drive) and identity systems.
 
 ---
 
