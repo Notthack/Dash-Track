@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scan Voucher</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html">Admin Station</a>
+    <a href="scanner.html" class="active">Merchant Scanner</a>
+  </nav>
+
+  <div class="container">
+    <h1>Scan Voucher</h1>
+    <p class="subtitle">Validate and execute Dash conditionally.</p>
+    
+    <div id="reader"></div>
+
+    <div id="statusBox" class="status-box"></div>
+    
+    <div id="txPanel" class="tx-panel">
+      <div class="tx-icon">✅</div>
+      <h2 style="color: var(--valid-text); font-family: 'Manrope', sans-serif;">Payment Successful</h2>
+      <div class="tx-data">
+        <span class="tx-label">Tx ID:</span> <span class="tx-value monospace" id="txIdDisplay">...</span>
+        <span class="tx-label">Amount:</span> <span class="tx-value" id="txAmountDisplay">...</span>
+        <span class="tx-label">Time:</span> <span class="tx-value" id="txTimeDisplay">...</span>
+      </div>
+    </div>
+    
+    <button id="redeemBtn" class="redeem-btn" style="display: none;">Redeem Voucher</button>
+    <button id="scanAgainBtn" style="display: none; background: var(--text-muted);">Scan Another Voucher</button>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/scannerController.js"></script>
+</body>
+</html>

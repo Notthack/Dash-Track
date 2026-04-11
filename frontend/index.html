@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Voucher</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="active">Admin Station</a>
+    <a href="scanner.html">Merchant Scanner</a>
+  </nav>
+
+  <div class="container">
+    <h1>Generate Voucher</h1>
+    <p class="subtitle">Securely mint a new Dash authorization token.</p>
+    
+    <button id="issueBtn">Generate New QR (10 DASH)</button>
+
+    <div id="qrWrapper" class="qr-wrapper" style="display: none;">
+      <div id="qrcode"></div>
+      <div id="voucherIdDisplay" class="voucher-id"></div>
+    </div>
+    
+    <div class="transactions-panel">
+      <h2>Recent Transactions</h2>
+      <div class="table-container">
+        <table id="txTable">
+          <thead>
+            <tr>
+              <th>Voucher ID</th>
+              <th>Status</th>
+              <th>Tx ID</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="txTableBody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/adminController.js"></script>
+</body>
+</html>
