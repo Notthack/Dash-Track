@@ -1,47 +1,50 @@
-const { v4: uuidv4 } = require('uuid');
-
-// In-memory storage for MVP
-const vouchers = new Map();
+/**
+ * VoucherModel — Thin facade over the active storage strategy.
+ * 
+ * Business rules (status validation, state transitions) live here.
+ * Persistence is delegated entirely to the storage layer.
+ * 
+ * The model never imports Dash SDK directly — clean separation of concerns.
+ */
+const { getStorage } = require('../storage/StorageFactory');
 
 class VoucherModel {
-  static create(amount) {
-    const voucher_id = uuidv4();
-    const voucher = {
-      voucher_id,
-      amount: amount || 10, // default 10 Dash for demo
-      status: 'VALID',
-      tx_id: null,
-      created_at: new Date().toISOString(),
-      redeemed_at: null
-    };
-    vouchers.set(voucher_id, voucher);
-    return voucher;
+
+  static async create(amount) {
+    const storage = getStorage();
+    return storage.createVoucher(amount);
   }
 
-  static findById(id) {
-    return vouchers.get(id);
+  static async findById(id) {
+    const storage = getStorage();
+    return storage.getVoucher(id);
   }
 
-  static markRedeemed(id, tx_id) {
-    const voucher = vouchers.get(id);
+  static async markRedeemed(id, tx_id) {
+    const storage = getStorage();
+    const voucher = await storage.getVoucher(id);
     if (!voucher) throw new Error('Voucher not found');
     if (voucher.status !== 'VALID') throw new Error('Voucher is not valid');
-    
-    voucher.status = 'REDEEMED';
-    voucher.tx_id = tx_id || null;
-    voucher.redeemed_at = new Date().toISOString();
-    return voucher;
+
+    return storage.updateVoucher(id, {
+      status: 'REDEEMED',
+      tx_id: tx_id || null,
+      redeemed_at: new Date().toISOString()
+    });
   }
 
-  static markRevoked(id) {
-    const voucher = vouchers.get(id);
+  static async markRevoked(id) {
+    const storage = getStorage();
+    const voucher = await storage.getVoucher(id);
     if (!voucher) throw new Error('Voucher not found');
-    voucher.status = 'REVOKED';
-    return voucher;
+
+    return storage.updateVoucher(id, { status: 'REVOKED' });
   }
 
-  static getAllTransactions() {
-    return Array.from(vouchers.values())
+  static async getAllTransactions() {
+    const storage = getStorage();
+    const all = await storage.getAllVouchers();
+    return all
       .map(v => ({
         voucher_id: v.voucher_id,
         status: v.status,

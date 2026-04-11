@@ -31,5 +31,14 @@ const ApiService = {
   async getTransactions() {
     const res = await fetch(`${API_URL}/transactions`);
     return res.json();
+  },
+
+  async revokeVoucher(voucher_id) {
+    const res = await fetch(`${API_URL}/revoke-voucher`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ voucher_id })
+    });
+    return res.json();
   }
 };

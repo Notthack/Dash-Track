@@ -1,0 +1,20 @@
+{
+  "network": "testnet",
+  "dapiAddresses": [
+    "seed-1.testnet.networks.dash.org:1443",
+    "seed-2.testnet.networks.dash.org:1443"
+  ],
+  "faucetUrl": "http://faucet.testnet.networks.dash.org/api/drip",
+  "faucetWebUrl": "http://faucet.testnet.networks.dash.org/",
+  "alternativeFaucets": [
+    "https://testnet-faucet.dash.org/"
+  ],
+  "skipSyncBeforeHeight": 1449000,
+  "lastKnownGoodDate": "2026-04-10",
+  "notes": [
+    "DAPI seeds and faucet URL are verified working as of the date above.",
+    "skipSyncBeforeHeight dramatically speeds up the wallet sync on testnet by skipping old blocks. Set it to ~500 blocks before your earliest expected transaction. Raise it over time as the chain grows.",
+    "If DAPI addresses stop working, check http://quorums.testnet.networks.dash.org/masternodes for current masternodes.",
+    "If the faucet is offline, send tDash manually from any existing wallet to the address the script prints."
+  ]
+}

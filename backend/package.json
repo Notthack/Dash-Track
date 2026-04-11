@@ -12,6 +12,8 @@
   "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.6",
+    "dash": "^6.0.1",
+    "dotenv": "^17.4.1",
     "express": "^5.2.1",
     "uuid": "^13.0.0"
   }
