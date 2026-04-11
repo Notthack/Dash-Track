@@ -3,12 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generate Voucher</title>
+  <meta name="description" content="Admin station for issuing and revoking trust-verified Dash vouchers.">
+  <title>Admin Station — Dash Voucher</title>
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
+  <!-- Animated background blobs -->
+  <div class="bg-blob bg-blob--1"></div>
+  <div class="bg-blob bg-blob--2"></div>
+
+  <!-- Theme toggle -->
+  <div class="theme-toggle">
+    <span class="theme-toggle__icon theme-toggle__icon--sun">☀️</span>
+    <button class="theme-toggle__btn" aria-label="Toggle dark mode"></button>
+    <span class="theme-toggle__icon theme-toggle__icon--moon">🌙</span>
+  </div>
+
+  <!-- Logo -->
+  <div class="app-header">
+    <img src="assets/dash_logo.png" alt="Dash Logo" class="app-logo">
+    <span class="app-title">Trust-Verified Payments</span>
+  </div>
+
+  <!-- Nav -->
   <nav>
     <a href="index.html" class="active">Admin Station</a>
     <a href="scanner.html">Merchant Scanner</a>
@@ -52,6 +72,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Toast container for notifications -->
+  <div class="toast-container" id="toastContainer"></div>
 
   <script src="js/api.js"></script>
   <script src="js/adminController.js"></script>
