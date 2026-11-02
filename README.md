@@ -35,24 +35,22 @@ A sophisticated, role-based application built for the **NottsHack 2026** competi
 ## 🛠️ Getting Started
 
 ### 1. Prerequisites
--   Node.js (v18+ recommended)
--   A Dash Platform Identity and Contract (configured for Testnet)
+-   Node.js 24 LTS and npm
+-   No wallet or Dash credentials are needed for the local demo.
 
 ### 2. Configuration
-Create a `.env` file in the `backend` directory:
-```env
-PORT=3000
-USE_DASH_PLATFORM=true
-MNEMONIC="your dash testnet mnemonic here"
-IDENTITY_ID="your_identity_id_here"
-CONTRACT_ID="your_contract_id_here"
+Run commands from the `backend` directory so dotenv loads the correct file:
+```bash
+cd backend
+cp .env.example .env
 ```
+
+The example defaults to `USE_DASH_PLATFORM=false`: vouchers are stored in memory
+and disappear when the server restarts. Keep `.env` local; it is ignored by Git.
 
 ### 3. Installation
 ```bash
-# Navigate to backend
-cd backend
-npm install
+npm ci
 ```
 
 ### 4. Launch
@@ -63,6 +61,29 @@ npm start
 The application will be accessible at:
 - **Main App:** [http://localhost:3000/index.html](http://localhost:3000/index.html)
 - **Merchant Scanner:** [http://localhost:3000/scanner.html](http://localhost:3000/scanner.html)
+
+### Optional Dash Testnet storage
+
+Create a fresh Testnet wallet, identity and voucher data contract, then set
+`USE_DASH_PLATFORM=true`, `MNEMONIC`, `IDENTITY_ID` and `CONTRACT_ID` in your local
+`backend/.env`. Restart the server after changing configuration. The contract
+schema is in `backend/setup-dash.js`; run `node setup-dash.js` from `backend` only
+after configuring your own fresh Testnet mnemonic and identity. Registration
+writes the new `CONTRACT_ID` to that local file and consumes Testnet credits.
+The separate identity-creation scripts mentioned in that file are not included
+in this repository.
+
+Never reuse a mnemonic that has appeared in this repository or another public
+location, even for a demo. Deleting it from Git does not make it safe again.
+Never use a wallet containing real assets with this prototype.
+
+### Demo limits
+
+Payments are simulated by `DashPaymentService`, including when Dash storage is
+enabled. The role selector is a UI switch, not server-side authentication.
+This hackathon prototype is intended for local evaluation, not deployment with
+real funds. Dependencies are installed from the lockfile rather than committed
+as `node_modules`.
 
 ---
 
